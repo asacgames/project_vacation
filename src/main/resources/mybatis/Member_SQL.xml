@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.work.vacation.dao.MemberDao">
+
+    <select id="selectMember" resultType="com.work.vacation.model.Member">
+        SELECT  /* member.selectMemberList */
+                 ID                -- 아이디
+                ,NAME              -- 이름
+                ,PASSWORD          -- 비밀번호
+                ,ANNUAL            -- 연차
+                ,ANNUAL_USE        -- 사용한 연차 수
+        FROM MEMBER
+        WHERE ID = #{id}
+    </select>
+
+</mapper>
