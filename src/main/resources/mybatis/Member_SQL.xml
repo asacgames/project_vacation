@@ -9,10 +9,17 @@
                  ID                -- 아이디
                 ,NAME              -- 이름
                 ,PASSWORD          -- 비밀번호
-                ,ANNUAL            -- 연차
-                ,ANNUAL_USE        -- 사용한 연차 수
+                ,VACATION          -- 총 연차
+                ,VACATION_USE      -- 사용한 연차 수
         FROM MEMBER
         WHERE ID = #{id}
     </select>
+
+    <update id="updateMemberVacationInfo">
+        UPDATE MEMBER   /* member.updateMemberVacationInfo */
+           SET  VACATION_USE = '0' -- 사용한 연차 0일로 리셋
+              , AMDR_ID = 'system'
+              , AMD_DT = CURRENT_DATE
+    </update>
 
 </mapper>

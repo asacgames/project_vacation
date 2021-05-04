@@ -17,4 +17,8 @@ public class LoginService {
         return memberDao.selectMember(param);
     }
 
+    public int updateMemberVacationInfo(){
+        return memberDao.updateMemberVacationInfo();
+    }
+
 }

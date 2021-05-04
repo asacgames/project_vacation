@@ -1,5 +1,4 @@
-package com.work.vacation.controller;
-
+package com.work.vacation.restful;
 
 import com.work.vacation.common.CommonCode;
 import com.work.vacation.common.CommonUtils;
@@ -12,14 +11,14 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/loginApi")
-public class LoginController {
+public class LoginRestController {
 
     @Autowired
     private LoginService loginService;
 
     // 로그인
     @PostMapping("/login")
-    public String login(String inputId, String inputPass, HttpSession session) throws Exception {
+    public String login(String inputId, String inputPass, HttpSession session) {
 
         String resultMsg = CommonCode.SUCCESS;  // 결과메시지
         String id = "";     // 아이디

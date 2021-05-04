@@ -4,11 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class VacationController {
+public class MainController {
 
-    // 휴가신청(등록)
-    @RequestMapping("/vacationPage.do")
-    public String vacationReg(){
-        return "vacationPage";
+    // 기본페이지
+    @RequestMapping("/")
+    public String mainPage(){
+        return "index";
     }
 }
