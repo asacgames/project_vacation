@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.work.vacation.dao.VacationDao">
+
+    <!-- 휴가 체크 -->
+    <select id="selectVacationDulCheck" resultType="com.work.vacation.model.Vacation">
+        SELECT      /* vacation.selectVacationDulCheck */
+            ID
+        FROM VACATION_INFO
+        WHERE 1=1
+        AND ID = #{id}
+        AND CANCEL_YN = 'N'
+        <if test='(startTimeCheck != null and startTimeCheck == "Y") and (endTimeCheck != null and endTimeCheck == "Y")'>
+            <![CDATA[
+            AND VACATION_ST_DATE < TO_DATE(#{vacation_end_date} ||'00', 'YYYYMMDDHH24MISS')
+            AND VACATION_END_DATE > TO_DATE(#{vacation_st_date} ||'00', 'YYYYMMDDHH24MISS')
+            ]]>
+        </if>
+        <if test='(startTimeCheck != null and startTimeCheck == "Y") and (endTimeCheck == null or endTimeCheck != "Y")'>
+            <![CDATA[
+            AND VACATION_ST_DATE < TO_DATE(#{vacation_end_date} || '235959' , 'YYYYMMDDHH24MISS')
+            AND VACATION_END_DATE > TO_DATE(#{vacation_st_date} || '00', 'YYYYMMDDHH24MISS')
+            ]]>
+        </if>
+        <if test='(startTimeCheck == null or startTimeCheck != "Y") and (endTimeCheck != null and endTimeCheck == "Y")'>
+            <![CDATA[
+            AND VACATION_ST_DATE < TO_DATE(#{vacation_end_date} || '00', 'YYYYMMDDHH24MISS')
+            AND VACATION_END_DATE > TO_DATE(#{vacation_st_date} || '000000', 'YYYYMMDDHH24MISS')
+            ]]>
+        </if>
+        <if test='(startTimeCheck == null or startTimeCheck != "Y") and (endTimeCheck == null or endTimeCheck != "Y")'>
+            <![CDATA[
+            AND VACATION_ST_DATE < TO_DATE(#{vacation_end_date} || '235959','YYYYMMDDHH24MISS')
+            AND VACATION_END_DATE > TO_DATE(#{vacation_st_date} || '000000', 'YYYYMMDDHH24MISS')
+            ]]>
+        </if>
+        LIMIT 1
+    </select>
+
+    <!-- 휴가 등록 -->
+    <insert id="insertVacation">
+        INSERT INTO VACATION_INFO   /* vacation.insertVacation */
+              (
+                 ID
+                ,VACATION_TYPE
+                ,VACATION_ST_DATE
+                ,VACATION_END_DATE
+                ,USE_DAY
+                ,COMMENT
+                ,CANCEL_YN
+                ,CRETR_ID
+                ,CRET_DT
+              )
+        VALUES(
+                 #{id}
+                ,#{vacation_type}
+                <if test='startTimeCheck != null and startTimeCheck == "Y"'>
+                    ,TO_DATE(#{vacation_st_date}||'00', 'YYYYMMDDHH24MISS')
+                </if>
+                <if test='startTimeCheck == null or startTimeCheck != "Y"'>
+                    ,TO_DATE(#{vacation_st_date} || '000000', 'YYYYMMDDHH24MISS')
+                </if>
+                <if test='endTimeCheck != null and endTimeCheck == "Y"'>
+                    ,TO_DATE(#{vacation_end_date}||'00', 'YYYYMMDDHH24MISS')
+                </if>
+                <if test='endTimeCheck == null or endTimeCheck != "Y"'>
+                    ,TO_DATE(#{vacation_end_date} || '235959', 'YYYYMMDDHH24MISS')
+                </if>
+                ,#{use_day}
+                ,#{comment}
+                ,'N'
+                ,'system'
+                ,SYSDATE
+              )
+    </insert>
+
+    <update id="updateVacationRegister">
+        UPDATE MEMBER
+        SET VACATION_USE = VACATION_USE + #{vacationDayNum}
+        WHERE ID = #{userId};
+    </update>
+
+    <!-- 휴가 신청 내역 -->
+    <select id="selectVacationInfo" resultType="hashmap">
+        SELECT      /* vacation.selectVacationInfo */
+                INDEX
+               ,ID
+               ,TO_CHAR(VACATION_ST_DATE, 'YYYY-MM-DD  HH24:MI') AS VACATION_ST_DATE
+               ,TO_CHAR(VACATION_END_DATE, 'YYYY-MM-DD  HH24:MI') AS VACATION_END_DATE
+               ,(CASE WHEN VACATION_TYPE = 'VD' THEN '휴가'
+                     WHEN VACATION_TYPE = 'VH' THEN '반차'
+                     WHEN VACATION_TYPE = 'VHH' THEN '반반차'
+                     ELSE '휴가'
+                END) AS VACATION_TYPE
+               ,USE_DAY
+               ,CANCEL_YN
+               ,TO_CHAR(CANCEL_DT, 'YYYY-MM-DD  HH24:MI') AS CANCEL_DT
+               ,COMMENT
+        FROM VACATION_INFO
+        WHERE ID = #{id}
+            <![CDATA[
+            AND (VACATION_ST_DATE >= TO_DATE(#{vacation_st_date} || '000000', 'YYYYMMDDHH24MISS') AND VACATION_ST_DATE <= TO_DATE(#{vacation_end_date} || '235959','YYYYMMDDHH24MISS'))
+            ]]>
+        ORDER BY CRET_DT
+    </select>
+
+    <!-- 휴가 신청 내역 카운트 -->
+    <select id="selectVacationInfoCnt" resultType="int">
+        SELECT      /* vacation.selectVacationInfo */
+            COUNT(INDEX)
+        FROM VACATION_INFO
+        WHERE ID = #{id}
+            <![CDATA[
+          AND (VACATION_ST_DATE >= TO_DATE(#{vacation_st_date} || '000000', 'YYYYMMDDHH24MISS') AND VACATION_ST_DATE <= TO_DATE(#{vacation_end_date} || '235959','YYYYMMDDHH24MISS'))
+        ]]>
+    </select>
+
+    <!-- 휴가 취소 유효성 체크 -->
+    <select id="selectVacationCancelCheck" resultType="hashmap">
+        SELECT      /* vacation.selectVacationCancelCheck */
+                 CANCEL_YN
+                ,USE_DAY
+        FROM VACATION_INFO
+        WHERE INDEX = #{index}
+        AND ID = #{id}
+        AND VACATION_ST_DATE > SYSDATE
+    </select>
+
+    <!-- 휴가 취소 처리 -->
+    <update id="updateVacationCancel">
+        UPDATE VACATION_INFO  /* vacation.updateVacationCancel */
+        SET CANCEL_YN = 'Y'
+            ,CANCEL_DT = SYSDATE
+        WHERE INDEX = #{index}
+          AND ID = #{id}
+          AND CANCEL_YN = 'N';
+
+        UPDATE MEMBER
+        SET VACATION_USE = VACATION_USE - #{cancelDay}
+        WHERE ID = #{id};
+    </update>
+
+</mapper>

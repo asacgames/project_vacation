@@ -3,9 +3,11 @@ package com.work.vacation.restful;
 import com.work.vacation.common.CommonCode;
 import com.work.vacation.common.CommonUtils;
 import com.work.vacation.model.Member;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import com.work.vacation.service.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 
@@ -32,13 +34,8 @@ public class LoginRestController {
             return CommonCode.NO_MEMBER_PASSWORD;
         }
 
-        Member member;
-        Member memberParam = new Member();
-        memberParam.setId(inputId);
-        memberParam.setPassword(inputPass);
-
         // 로그인 정보 조회
-        member = loginService.selectMember(memberParam);
+        Member member = loginService.selectMember(inputId);
 
         if(member != null) {
             id = member.getId();
@@ -51,24 +48,12 @@ public class LoginRestController {
 
             session.setAttribute("loginId", id);
             session.setAttribute("loginName", name);
+
         }else{
             resultMsg = CommonCode.NO_MEMBER_INFO;
         }
 
         return resultMsg;
     }
-
-    // 로그아웃
-    @GetMapping("/logout")
-    public String logout(HttpSession session){
-
-        String sendUrl = "";
-
-        session.invalidate();
-
-        return sendUrl;
-    }
-
-
 
 }

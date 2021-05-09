@@ -4,22 +4,29 @@
 
 <mapper namespace="com.work.vacation.dao.MemberDao">
 
+    <!-- 사용자 정보 조회  -->
     <select id="selectMember" resultType="com.work.vacation.model.Member">
         SELECT  /* member.selectMemberList */
                  ID                -- 아이디
                 ,NAME              -- 이름
                 ,PASSWORD          -- 비밀번호
+                ,POSITION_NM       -- 직책
+                ,GROUP_NM          -- 조직
                 ,VACATION          -- 총 연차
                 ,VACATION_USE      -- 사용한 연차 수
+                ,TO_CHAR(START_DT,'YYYY-MM-DD')          -- 입사일
         FROM MEMBER
         WHERE ID = #{id}
     </select>
 
+    <!-- 매년 1월 1일에 실행되는 스케쥴러 -->
+    <!-- 모든 직원 연차15일로 세팅 -->
     <update id="updateMemberVacationInfo">
         UPDATE MEMBER   /* member.updateMemberVacationInfo */
-           SET  VACATION_USE = '0' -- 사용한 연차 0일로 리셋
+           SET  VACATION = 15
+              , VACATION_USE = 0 -- 사용한 연차 0일로 리셋
               , AMDR_ID = 'system'
-              , AMD_DT = CURRENT_DATE
+              , AMD_DT = SYSDATE
     </update>
 
 </mapper>

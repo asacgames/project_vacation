@@ -24,7 +24,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         log.info("userSession : " + userSession);
 
         if(CommonUtils.isEmptyNull(userSession)){
-            response.sendRedirect("/");
+            response.sendRedirect("/main");
             return false;
         }
         return true;

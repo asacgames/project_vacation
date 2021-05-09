@@ -7,9 +7,11 @@ public class CommonUtils {
      *  null일 경우 rtVal 값을 반환
      *  null이 아닐 경우 해당 값을 반환
      */
-    public static String isNullToStr(String val, String rtVal){
+    public static String isNullToStr(Object val, String rtVal){
+        String result = "";
         if(val == null){return "";}
-        return val;
+        else{result = val.toString();}
+        return result;
     }
 
     /*

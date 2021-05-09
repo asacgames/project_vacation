@@ -11,19 +11,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
     $(document).ready(function(){
+
         // 주석풀고 url 휴가신청 페이지 및 휴가정보 확인 페이지로 변경해야 함
-        <%--if("<%=sessionId%>" != null){--%>
-        <%--    location.href ="/vacationPage.do";--%>
-        <%--}--%>
+        if('<%=sessionId%>' != null && '<%=sessionId%>' != ''){
+            location.href ="/loginMain.do";
+        }
+
     });
 
     function fn_login(){
@@ -50,7 +55,7 @@
             },
             success: function( result ) {
                 if(result === '1000') {
-                    location.href ="/vacationPage.do";
+                    location.href ="/loginMain.do";
                 }else if(result === '1002'){
                     alert("회원정보가 없습니다. 다시 확인 해 주세요.");
                 }else if(result === '1003'){
@@ -60,6 +65,9 @@
                 }else if(result === '1005'){
                     alert("비밀번호가 다릅니다. 다시 확인 해 주세요.");
                 }
+            },
+            error:function(error){
+                alert("오류가 발생했습니다. 관리자에게 문의해주세요.");
             }
         });
     }
@@ -83,18 +91,9 @@
                 <input type="password" class="form-control" id="loginPass" placeholder="Password">
             </div>
         </div>
-<%--        <div class="form-group">--%>
-<%--            <div class="col-sm-offset-2 col-sm-10">--%>
-<%--                <div class="checkbox">--%>
-<%--                    <label>--%>
-<%--                        <input type="checkbox"> Remember me--%>
-<%--                    </label>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </div>--%>
         <div class="form-group">
             <div class="col-sm-offset-4 col-sm-10">
-                <button type="submit" class="btn btn-default" onClick="fn_login();">Sign in</button>
+                <span class="btn btn-default" onClick="fn_login();">Sign in</span>
             </div>
         </div>
     </form>

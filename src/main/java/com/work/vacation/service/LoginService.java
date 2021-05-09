@@ -13,10 +13,14 @@ public class LoginService {
     @Autowired
     MemberDao memberDao;
 
-    public Member selectMember(Member param){
-        return memberDao.selectMember(param);
+    // 유저정보 조회
+    public Member selectMember(String id){
+        Member memberParam = new Member();
+        memberParam.setId(id);
+        return memberDao.selectMember(memberParam);
     }
 
+    // 유저 휴가 정보 0일로 세팅
     public int updateMemberVacationInfo(){
         return memberDao.updateMemberVacationInfo();
     }
